@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset=utf-8 />
+<title>JS Bin</title>
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<style>
+  article, aside, figure, footer, header, hgroup, 
+  menu, nav, section { display: block; }
+  
+  td {
+    font-size: smaller;  
+  }
+  
+  input { 
+    width:25px; 
+  }
+  
+</style>
+<script>
+  
+function initialize() {
+  var strValue = decodeURIComponent(window.location.hash).replace(/\s/g, '');
+  console.log(strValue.substring(1));  
+  var strArr = strValue.substring(1).split(',');
+  var floatArr = [20, 10, 30, 40];
+  if(strArr.length > 1) {
+      for(i=0; i < strArr.length; i++) {
+          floatArr[i] = parseFloat(strArr[i]);
+      }
+   
+  }
+  
+  
+  
+  document.getElementById('a').value = floatArr[0];
+  document.getElementById('b').value = floatArr[1];
+  document.getElementById('c').value = floatArr[2];
+  document.getElementById('d').value = floatArr[3];
+  
+  calc();
+}
+
+
+function sin(x)
+{
+    return Math.sin(parseFloat(x)*Math.PI/180);
+}
+
+function cos(x)
+{
+    return Math.cos(parseFloat(x)*Math.PI/180);
+}
+
+function acot(x)
+{
+    return Math.atan(1/parseFloat(x))/Math.PI*180;
+}
+
+function normalize(x)
+{
+    if(x < 0)
+    {
+      x = x + 180;
+    }
+    if(Math.abs(Math.round(x)-x) < 0.00001)
+    {
+      return Math.round(x);
+    }
+    else if(Math.abs(Math.round(2*x)-2*x) < 0.00001)
+    {
+          return Math.round(2*x)/2.0;
+     }
+    return x;
+}
+
+function pattern( a,  b,  c,  d, x,  y) {
+    var message = "<br>";
+    var arr1 = [x,b,d];
+    arr1.sort();
+    var arr2 = [y,a,c];
+    arr2.sort();
+  
+      
+    var arr = arr1.concat(arr2);
+    if(arr1[0] > arr2[0])
+    {
+        arr = arr2.concat(arr1);
+    }
+    var l = arr.length;
+    var t1 = 0.0;
+    var t2 = 0.0;
+    var t3 = 0.0;
+    var t4 = 0.0;
+    for (i = 0; i < l; i++) {
+        var t = arr[i];
+        var pat1 = pattern1(t);
+        var pat2 = pattern2(t);
+        var pat3 = pattern3(t);
+        var pat4 = pattern4(t);
+        
+        if(same(pat1, arr))
+        {
+           t1 = t;
+        }
+        if(same(pat2, arr))
+        {
+           t2 = t;
+        }
+        if(same(pat3, arr))
+        {
+           t3 = t;
+        }
+        if(same(pat4, arr))
+        {
+           t4 = t;
+        }
+    }
+    if(t1 > 0)
+    {
+       var pat = pattern1(t1);
+       var sub = subPattern(pat, x, y);
+       message = message + "<br>Model 1" + sub + "<br>" + "t=" + t1 + ";" + patternToString(patStr1(), pat, x, y) +"<br>";
+      
+    }
+    if(t2 > 0)
+    {
+       var pat = pattern2(t2);
+       var sub = subPattern(pat, x, y);
+       message = message + "<br>Model 2" + sub + "<br>" + "t=" + t2 + ";" + patternToString(patStr2(), pat, x, y) + "<br>";
+    }
+    if(t3 > 0)
+    {
+       var pat = pattern3(t3);
+       var sub = subPattern(pat, x, y);
+       message = message + "<br>Model 3" + sub + "<br>" + "t=" + t3 + ";" + patternToString(patStr3(), pat, x, y) + "<br>";
+    }
+    if(t4 > 0)
+    {
+       var pat = pattern4(t4);
+       var sub = subPattern(pat, x, y);
+       message = message + "<br>Model 4" + sub + "<br>" +"t=" + t4 + ";" + patternToString(patStr4(), pat, x, y) + "<br>";
+    }
+    if( normalize(x+b+d) == 90)
+    {
+        message = message + "<br>Model 5 <br>" +"t=" + x + ", r=" + b + "; (t, r, 90-r-t):(t,r,90-r-t)"+ "<br>";
+    }
+  
+    return message;
+}
+
+function patternToString(patStr, pat, x, y) {
+  var a1 = pat.slice(0,3);
+  var a2 = pat.slice(3,6);
+  
+  var x1 = a1.indexOf(x);
+  var y1 = a2.indexOf(y);
+  
+  var x2 = a2.indexOf(x);
+  var y2 = a1.indexOf(y);
+  
+  if(x1 < 0 || y1 < 0) {
+    x1 = y2;
+    y1 = x2;
+  }
+  
+  
+  var str = "(";
+  var l = pat.length;
+  for (i = 0; i < l; i++) {
+    var join = ",";
+    if(i == 2) {
+      join = "):(";
+    }
+    else if (i == 5) {
+      join = ")";
+    }
+    
+    if(i == x1 || i == y1 + 3) {
+      str += "<font color='red'>" + patStr[i] + "</font>" + join;
+    }
+    else {
+      str += patStr[i] + join;
+    }
+    
+  }
+  
+  return str;
+  
+}
+
+function subPattern(pat, x, y) {
+  var a1 = pat.slice(0,3);
+  var a2 = pat.slice(3,6);
+  
+  var x1 = a1.indexOf(x);
+  var y1 = a2.indexOf(y);
+  
+  var x2 = a2.indexOf(x);
+  var y2 = a1.indexOf(y);
+  
+  
+  var sub = 0;
+  if(x1 >= 0 && y1 >= 0) {
+    sub = (2-x1) * 3 + (2-y1) + 1;
+  }
+  else if (x2 >=0 && y2 >= 0) {
+    sub = (2-x2) * 3 + (2-y2) + 1;
+  }
+  
+  if(sub > 0) {
+    return "." + sub;
+  }
+  else return "";
+}
+
+function patStr1() {
+  return ["t","30","90-3*t", "2*t", "30-t", "30+t"];
+}
+
+
+function patStr2()
+{
+    return ["t","30-2*t","90+t", "2*t", "30-2*t", "30"];
+}
+
+function patStr3()
+{
+    return ["t","60-4*t","60+t", "3*t", "30-2*t", "30+t"];
+}
+
+function patStr4()
+{
+    return ["t","30-t","90-t", "2*t", "30-t", "30"];
+}
+
+
+function pattern1(t)
+{
+    return [t,30,90-3*t, 2*t, 30-t, 30+t];
+}
+
+function pattern2(t)
+{
+    return [t,30-2*t,90+t, 2*t, 30-2*t, 30];
+}
+
+function pattern3(t)
+{
+    return [t,60-4*t,60+t, 3*t, 30-2*t, 30+t];
+}
+
+function pattern4(t)
+{
+    return [t,30-t,90-t, 2*t, 30-t, 30];
+}
+
+
+function same(a, b)
+{
+  var a1 = a.slice(0,3);
+  var a2 = a.slice(3,6);
+  var b1 = b.slice(0,3);
+  var b2 = b.slice(3,6);
+  a1.sort();
+  a2.sort();
+  b1.sort();
+  b2.sort();
+  var sa1 = a1.join();
+  var sa2 = a2.join();
+  var sb1 = b1.join();
+  var sb2 = b2.join();
+  return (sa1 == sb1 && sa2 == sb2) || (sa1 == sb2 && sa2 == sb1);
+ 
+}
+	
+
+function calc()
+{
+  
+  var xfield = document.getElementById('x');
+  var yfield = document.getElementById('y');
+  var panel = document.getElementById('panel');
+  var canvas = document.getElementById('canvas');
+  canvas.width = canvas.width;
+  var ctx = canvas.getContext("2d");
+  var a = parseFloat(document.getElementById('a').value);
+  var b = parseFloat(document.getElementById('b').value);
+  var c = parseFloat(document.getElementById('c').value);
+  var d = parseFloat(document.getElementById('d').value);
+  var x = 0;
+  var y = 0;
+  
+  window.location.hash = "#" + a + "," + b + "," + c + "," + d;
+  
+  
+  if(a+b+c+d < 180)
+  {
+    var first = sin(b)*sin(d)/(sin(c)*sin(a));
+    var second = cos(a+b+c+d);
+    var third = sin(a+b+c+d);
+    
+    x = normalize(acot( (first - second)/ third));
+    y = 180-a-b-c-d-x;
+    
+    xfield.value = x;
+    yfield.value = y;
+    panel.innerHTML = pattern(a,b,c,d,x,y, panel);
+    
+    
+  }
+  else
+  {
+    
+    panel.innerHTML = "Toplam 180'den büyük<br>" + pattern(a,b,c,d,x,y, panel);
+    
+  }
+  
+  var size = 500;
+    
+  var bx = 20, by = size-30;
+  var cx = 400, cy = size-30;
+  var sa = cx-bx;
+  var R = sa/sin(x+y)/2;
+  var sb = 2*R*sin(a+b);
+  var sc = 2*R*sin(c+d);
+  var h = sb*sc/2/R;
+  var ay = by-h;
+  var ax = Math.sqrt(sc*sc - h*h);
+  
+  var R2 = sa/sin(b+c)/2;
+  var sb2 = 2*R2*sin(b);
+  var sc2 = 2*R2*sin(c);
+  var h2 = sb2*sc2/2/R2;
+  var py = by-h2;
+  var px = Math.sqrt(sc2*sc2 - h2*h2);
+  
+  var maxx = Math.max(Math.max(ax,bx),cx);
+  var maxy = Math.max(Math.max(ay,by),cy);
+  var minx = Math.min(Math.min(ax,bx),cx);
+  var miny = Math.min(Math.min(ay,by),cy);
+  
+  var height = maxy-miny;
+  var width = maxx-miny;
+  
+  
+    
+  if(height - size + 30 > 0)
+  {
+    var scaley = (size-30)/height;
+    var scalex = (size-30)/width;
+    var scale = Math.min(scalex, scaley);
+    ctx.scale(scale, scale);
+  }
+  ctx.translate(0, height - size + 30);
+
+  ctx.font = 'bold 14px arial';
+  ctx.fillText("A", ax-30, ay+10);
+  ctx.fillText("B", bx-10, by);
+  ctx.fillText("C", cx+5, cy);
+  ctx.fillText("P", px-15, py);
+  
+  ctx.moveTo(ax,ay);
+  ctx.lineTo(bx,by);
+  ctx.lineTo(cx,cy);
+  ctx.lineTo(ax,ay);
+  ctx.lineTo(px,py);
+  ctx.lineTo(bx,by);
+  ctx.lineTo(px,py);
+  ctx.lineTo(cx,cy);
+  ctx.stroke(); 
+  
+}
+</script>
+</head>
+<body onload="initialize()">
+  <p style="color:red">
+    ABC üçgeni içerisinde alınan bir P noktası için
+  </p>
+  
+  <table>
+    <tr>
+      <td style="color:red">BAP</td>
+      <td style="color:red">PAC</td>
+      <td>ABP</td>
+      <td>PBC</td>
+      <td>BCP</td>
+      <td>PCA</td>
+    </tr>
+    <tr>
+      <td><input id="x" type="text" disabled="true" value="x" /></td>
+      <td><input id="y" type="text" disabled="true" value="y" /></td>
+      <td><input id="a" type="text" value="20"/></td>
+      <td><input id="b" type="text" value="10"/></td>
+      <td><input id="c" type="text" value="30"/></td>
+      <td><input id="d" type="text" value="40"/></td>
+    </tr>
+  </table>
+  <br>
+  <button onclick="calc()"> Calculate </button>
+  <text id="panel"></text>
+  <br>
+  <canvas  id="canvas" width="500" height="500"></canvas>
+</body>
+</html>
